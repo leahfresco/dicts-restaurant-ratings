@@ -2,16 +2,19 @@
 import sys
 import random
 
-def get_ratings(scores):
-    """Returns Restaurant ratings in alphabetical order"""
+def get_ratings(scoresfile, restaurant_ratings):
+    """Returns a dictionary of restaurants and ratings from file"""
 
-    scores_file = open(scores)
+    scores_file = open(scoresfile)
 
-    restaurant_ratings = {}
     for line in scores_file:
         line = line.rstrip()
         ratings = line.split(':')
-        restaurant_ratings[ratings[0]] = ratings[1]
+        restaurant_name = ratings[0]
+        if restaurant_name in restaurant_ratings.keys():
+            restaurant_ratings[restaurant_name] = (int(restaurant_ratings[restaurant_name]) + int(ratings[1]))/2
+        else:
+            restaurant_ratings[ratings[0]] = ratings[1]
     return restaurant_ratings
 
 def add_new_restaurant(restaurant_ratings):
@@ -29,6 +32,7 @@ def add_new_restaurant(restaurant_ratings):
     restaurant_ratings[new_restaurant] = new_restaurant_score
     
     return restaurant_ratings
+
 
 def print_restaurant_ratings(restaurant_ratings):
     """ Prints restaurant ratings"""
@@ -52,9 +56,11 @@ def show_menu():
     print "2: See all restaurant ratings"
     print "3: Modify random restaurant rating"
     print "4: Modify restaurant rating of your choice"
+    print "5: Add new restaurants from file"
     print "q: Quit program"
 
-restaurants = get_ratings(sys.argv[1])
+restaurants = {}
+restaurants = get_ratings(sys.argv[1], restaurants)
 choice = ''
 show_menu()
 while choice != 'q':
@@ -68,6 +74,9 @@ while choice != 'q':
     elif choice == '4':
         update_restaurant = raw_input("Which restaurant would you like to update: ")
         restaurants = update_rating(restaurants, update_restaurant)
+    elif choice == '5':
+        new_restaurants = raw_input("File name: ")
+        restaurants = get_ratings(new_restaurants, restaurants)
     elif choice =='q':
         print "Goodbye"
     else:
